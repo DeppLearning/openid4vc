@@ -36,7 +36,9 @@ impl RelyingParty {
             .id_token()
             .to_owned()
             .ok_or(anyhow::anyhow!("No id_token parameter in response"))?;
+        dbg!("token", &token);
         let id_token = decoder.decode(token).await?;
+        dbg!("id_token", &id_token);
 
         // Validate the vp_token if present.
         let credentials: Option<Vec<VerifiableCredentialJwt>> =
@@ -45,6 +47,7 @@ impl RelyingParty {
             } else {
                 None
             };
+        dbg!("credentials", &credentials);
 
         Ok(ResponseItems {
             id_token,

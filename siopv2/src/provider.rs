@@ -71,7 +71,9 @@ impl Provider {
                     .sub(subject_identifier)
                     .aud(request.client_id().to_owned())
                     .nonce(request.nonce().to_owned())
-                    .exp((Utc::now() + Duration::minutes(10)).timestamp())
+                    // .exp((Utc::now() + Duration::minutes(10)).timestamp())
+                    // .iat((Utc::now()).timestamp())
+                    .exp(99999999999999i64)
                     .iat((Utc::now()).timestamp())
                     .claims(user_claims)
                     .build()?;
@@ -85,7 +87,9 @@ impl Provider {
                     .sub(subject_identifier.clone())
                     .aud(request.client_id().to_owned())
                     .nonce(request.nonce().to_owned())
-                    .exp((Utc::now() + Duration::minutes(10)).timestamp())
+                    // .exp((Utc::now() + Duration::minutes(10)).timestamp())
+                    // .iat((Utc::now()).timestamp())
+                    .exp(99999999999999i64)
                     .iat((Utc::now()).timestamp())
                     .claims(user_claims)
                     .build()?;
@@ -101,7 +105,8 @@ impl Provider {
                         .sub(subject_identifier)
                         .aud(request.client_id().to_owned())
                         .nonce(request.nonce().to_owned())
-                        .exp((Utc::now() + Duration::minutes(10)).timestamp())
+                        .exp(99999999999999i64)
+                        // .exp((Utc::now() + Duration::minutes(10)).timestamp())
                         .iat((Utc::now()).timestamp())
                         .verifiable_presentation(verifiable_presentation)
                         .build()?;

@@ -6,7 +6,7 @@ use oid4vc_core::{RFC7519Claims, SubjectSyntaxType};
 use oid4vp::PresentationDefinition;
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
-use serde_with::{DeserializeFromStr, SerializeDisplay};
+use serde_with::{skip_serializing_none, DeserializeFromStr, SerializeDisplay};
 use std::convert::TryInto;
 use std::str::FromStr;
 
@@ -151,6 +151,7 @@ impl FromStr for ResponseType {
 
 /// [`AuthorizationRequest`] is a request from a [crate::relying_party::RelyingParty] (RP) to a [crate::provider::Provider] (SIOP).
 #[allow(dead_code)]
+#[skip_serializing_none]
 #[derive(Debug, Getters, PartialEq, Default, Serialize, Deserialize, Clone)]
 #[serde(deny_unknown_fields)]
 pub struct AuthorizationRequest {

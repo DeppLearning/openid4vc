@@ -1,7 +1,6 @@
 use crate::VpToken;
 use anyhow::Result;
 use dif_presentation_exchange::PresentationSubmission;
-use futures::{executor::block_on, future::join_all};
 use oid4vc_core::Decoder;
 use oid4vci::VerifiableCredentialJwt;
 use serde::{Deserialize, Serialize};
@@ -27,17 +26,10 @@ impl Oid4vpParams {
             Oid4vpParams::Params { vp_token, .. } => decoder.decode(vp_token.to_owned()).await?,
         };
 
-        block_on(async move {
-            join_all(
-                vp_token
-                    .verifiable_presentation()
-                    .verifiable_credential
-                    .iter()
-                    .map(|vc| async { decoder.decode(vc.as_str().to_owned()).await }),
-            )
-            .await
-            .into_iter()
-            .collect()
-        })
+        let mut verifiable_credentials: Vec<VerifiableCredentialJwt> = vec![];
+        for vc in vp_token.verifiable_presentation().verifiable_credential.iter() {
+            verifiable_credentials.push(decoder.decode(vc.as_str().to_owned()).await?);
+        }
+        Ok(verifiable_credentials)
     }
 }
