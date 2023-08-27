@@ -1,6 +1,7 @@
 pub mod authentication;
 pub mod collection;
 pub mod decoder;
+pub mod error;
 pub mod jwt;
 pub mod rfc7519_claims;
 pub mod subject_syntax_type;
@@ -40,10 +41,10 @@ macro_rules! builder_fn {
 }
 
 // Helper function that allows to serialize custom structs into a query string.
-pub fn to_query_value<T: Serialize>(value: &T) -> anyhow::Result<String> {
+pub fn to_query_value<T: Serialize>(value: &T) -> Result<String, crate::error::Error> {
     serde_json::to_string(value)
         .map(|s| s.chars().filter(|c| !c.is_whitespace()).collect::<String>())
-        .map_err(|e| e.into())
+        .map_err(crate::error::Error::from)
 }
 
 pub fn generate_authorization_code(length: usize) -> String {

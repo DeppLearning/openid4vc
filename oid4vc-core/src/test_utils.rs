@@ -1,7 +1,6 @@
 use std::sync::Arc;
 
 use crate::{authentication::sign::ExternalSign, Sign, Subject, Verify};
-use anyhow::Result;
 use async_trait::async_trait;
 use derivative::{self, Derivative};
 use ed25519_dalek::{Keypair, Signature, Signer};
@@ -22,7 +21,7 @@ pub struct TestSubject {
 }
 
 impl TestSubject {
-    pub fn new(did: String, key_id: String) -> Result<Self> {
+    pub fn new(did: String, key_id: String) -> Result<Self, crate::error::Error> {
         Ok(TestSubject {
             did: identity_did::DIDUrl::parse(did)?,
             key_id,
@@ -35,7 +34,7 @@ impl Sign for TestSubject {
         Some(self.key_id.clone())
     }
 
-    fn sign(&self, message: &str) -> Result<Vec<u8>> {
+    fn sign(&self, message: &str) -> Result<Vec<u8>, crate::error::Error> {
         let signature: Signature = TEST_KEYPAIR.sign(message.as_bytes());
         Ok(signature.to_bytes().to_vec())
     }
@@ -47,13 +46,13 @@ impl Sign for TestSubject {
 
 #[async_trait]
 impl Verify for TestSubject {
-    async fn public_key(&self, _kid: &str) -> Result<Vec<u8>> {
+    async fn public_key(&self, _kid: &str) -> Result<Vec<u8>, crate::error::Error> {
         Ok(TEST_KEYPAIR.public.to_bytes().to_vec())
     }
 }
 
 impl Subject for TestSubject {
-    fn identifier(&self) -> Result<String> {
+    fn identifier(&self) -> Result<String, crate::error::Error> {
         Ok(self.did.to_string())
     }
 }
@@ -68,7 +67,7 @@ impl MockVerifier {
 
 #[async_trait]
 impl Verify for MockVerifier {
-    async fn public_key(&self, _kid: &str) -> Result<Vec<u8>> {
+    async fn public_key(&self, _kid: &str) -> Result<Vec<u8>, crate::error::Error> {
         Ok(TEST_KEYPAIR.public.to_bytes().to_vec())
     }
 }

@@ -1,4 +1,5 @@
-use serde::{de::Error, Deserialize, Deserializer, Serialize};
+use crate::error::Error::{self, *};
+use serde::{Deserialize, Deserializer, Serialize};
 use serde_with::{DeserializeFromStr, SerializeDisplay};
 use std::{fmt::Display, str::FromStr};
 
@@ -11,7 +12,7 @@ pub enum SubjectSyntaxType {
 }
 
 impl FromStr for SubjectSyntaxType {
-    type Err = anyhow::Error;
+    type Err = Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
@@ -46,7 +47,7 @@ pub mod serde_unit_variant {
         let s: String = Deserialize::deserialize(deserializer)?;
         (s == JWK_THUMBPRINT)
             .then_some(())
-            .ok_or(Error::custom("Invalid subject syntax type"))
+            .ok_or(serde::de::Error::custom(format!("Invalid subject syntax type: {}", s)))
     }
 }
 
@@ -54,7 +55,7 @@ pub mod serde_unit_variant {
 pub struct DidMethod(String);
 
 impl FromStr for DidMethod {
-    type Err = anyhow::Error;
+    type Err = crate::error::Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut did_scheme = s.splitn(3, ':');
@@ -70,7 +71,7 @@ impl FromStr for DidMethod {
             {
                 Ok(DidMethod(method.to_owned()))
             }
-            _ => Err(anyhow::anyhow!("Invalid DID method")),
+            _ => Err(InvalidDidMethodError(s.to_owned())),
         }
     }
 }

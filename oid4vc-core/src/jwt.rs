@@ -1,5 +1,4 @@
 use crate::Sign;
-use anyhow::{anyhow, Result};
 use getset::Getters;
 use jsonwebtoken::{Algorithm, DecodingKey, Header, Validation};
 use serde::de::DeserializeOwned;
@@ -30,16 +29,18 @@ where
     }
 }
 
-pub fn extract_header(jwt: &str) -> Result<(String, Algorithm)> {
-    let header = jsonwebtoken::decode_header(jwt)?;
+pub fn extract_header(jwt: &str) -> Result<(String, Algorithm), crate::error::Error> {
+    let header = jsonwebtoken::decode_header(jwt).map_err(crate::error::Error::from)?;
     if let Some(kid) = header.kid {
         Ok((kid, header.alg))
     } else {
-        Err(anyhow!("No key identifier found in the header."))
+        Err(crate::error::Error::MissingKeyIdentifierError(
+            "No key identifier found in the header.".to_string(),
+        ))
     }
 }
 
-pub fn decode<T>(jwt: &str, public_key: Vec<u8>, algorithm: Algorithm) -> Result<T>
+pub fn decode<T>(jwt: &str, public_key: Vec<u8>, algorithm: Algorithm) -> Result<T, crate::error::Error>
 where
     T: DeserializeOwned,
 {
@@ -49,12 +50,14 @@ where
     Ok(jsonwebtoken::decode::<T>(jwt, &key, &validation)?.claims)
 }
 
-pub fn encode<C, S>(signer: Arc<S>, header: Header, claims: C) -> Result<String>
+pub fn encode<C, S>(signer: Arc<S>, header: Header, claims: C) -> Result<String, crate::error::Error>
 where
     C: Serialize + Send,
     S: Sign + ?Sized,
 {
-    let kid = signer.key_id().ok_or(anyhow!("No key identifier found."))?;
+    let kid = signer.key_id().ok_or(crate::error::Error::MissingKeyIdentifierError(
+        "No key identifier found in the header.".to_string(),
+    ))?;
 
     let jwt = JsonWebToken::new(header, claims).kid(kid);
 
@@ -66,7 +69,7 @@ where
     Ok(message)
 }
 
-fn base64_url_encode<T>(value: &T) -> Result<String>
+fn base64_url_encode<T>(value: &T) -> Result<String, crate::error::Error>
 where
     T: ?Sized + Serialize,
 {
