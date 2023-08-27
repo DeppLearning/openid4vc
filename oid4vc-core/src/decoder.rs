@@ -11,7 +11,7 @@ impl Decoder {
     pub async fn decode<T: DeserializeOwned>(&self, jwt: String) -> Result<T> {
         let (kid, algorithm) = jwt::extract_header(&jwt)?;
         //  TODO: decode for JWK Thumbprint
-        let did_method = DidMethod::from(did_url::DID::from_str(&kid)?);
+        let did_method = DidMethod::from_str(&kid)?;
 
         let validator = self
             .validators

@@ -53,14 +53,8 @@ pub mod serde_unit_variant {
 #[derive(Debug, Clone, PartialEq, Eq, Hash, DeserializeFromStr, SerializeDisplay)]
 pub struct DidMethod(String);
 
-impl From<did_url::DID> for DidMethod {
-    fn from(did: did_url::DID) -> Self {
-        DidMethod(did.method().to_owned())
-    }
-}
-
 impl FromStr for DidMethod {
-    type Err = serde_json::Error;
+    type Err = anyhow::Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut did_scheme = s.splitn(3, ':');
@@ -71,10 +65,12 @@ impl FromStr for DidMethod {
             did_scheme.next(),
             did_scheme.next(),
         ) {
-            (Some("did"), Some(method), _, None) if !method.is_empty() && method.chars().all(char::is_alphanumeric) => {
+            (Some("did"), Some(method), _, None)
+                if !method.is_empty() && method.chars().all(|ch| matches!(ch, '0'..='9' | 'a'..='z')) =>
+            {
                 Ok(DidMethod(method.to_owned()))
             }
-            _ => Err(Error::custom("Invalid DID method")),
+            _ => Err(anyhow::anyhow!("Invalid DID method")),
         }
     }
 }

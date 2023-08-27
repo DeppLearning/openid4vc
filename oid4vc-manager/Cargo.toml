@@ -16,7 +16,6 @@ serde_with.workspace = true
 getset.workspace = true
 anyhow = "1.0"
 async-trait = "0.1"
-did_url = "0.1"
 chrono = "0.4"
 serde_urlencoded = "0.7"
 did-key = "0.2"
@@ -32,6 +31,7 @@ paste = "1.0"
 tower-http = { version = "0.4", features = ["cors"]}
 
 [dev-dependencies]
+identity_did = { version = "=0.7.0-alpha.7" }
 ed25519-dalek = "1.0.1"
 rand = "0.7"
 lazy_static = "1.4"

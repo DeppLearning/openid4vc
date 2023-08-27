@@ -12,11 +12,11 @@ getset = "0.1.2"
 jsonwebtoken = "8.2.0"
 base64-url = "2.0.0"
 async-trait = "0.1.68"
-did_url = "0.1.0"
 is_empty = "0.2.0"
 rand = "0.7"
 
 [dev-dependencies]
+identity_did = { version = "=0.7.0-alpha.7" }
 ed25519-dalek = "1.0.1"
 lazy_static = "1.4.0"
 derivative = "2.2.0"

@@ -14,15 +14,15 @@ lazy_static! {
 #[derive(Derivative)]
 #[derivative(Default)]
 pub struct TestSubject {
-    #[derivative(Default(value = "did_url::DID::parse(\"did:test:123\").unwrap()"))]
-    pub did: did_url::DID,
+    #[derivative(Default(value = "identity_did::DIDUrl::parse(\"did:test:123\").unwrap()"))]
+    pub did: identity_did::DIDUrl,
     pub key_id: String,
 }
 
 impl TestSubject {
     pub fn new(did: String, key_id: String) -> Result<Self> {
         Ok(TestSubject {
-            did: did_url::DID::parse(did)?,
+            did: identity_did::DIDUrl::parse(did)?,
             key_id,
         })
     }
