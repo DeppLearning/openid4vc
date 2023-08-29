@@ -22,7 +22,7 @@ impl RelyingParty {
     }
 
     pub fn encode(&self, request: &AuthorizationRequest) -> Result<String> {
-        jwt::encode(self.subject.clone(), Header::new(Algorithm::EdDSA), request)
+        jwt::encode(self.subject.clone(), Header::new(Algorithm::EdDSA), request).map_err(|e| e.into())
     }
 
     /// Validates a [`AuthorizationResponse`] by decoding the header of the id_token, fetching the public key corresponding to

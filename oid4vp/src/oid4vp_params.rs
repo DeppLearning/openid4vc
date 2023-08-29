@@ -33,7 +33,7 @@ impl Oid4vpParams {
                     .verifiable_presentation()
                     .verifiable_credential
                     .iter()
-                    .map(|vc| async { decoder.decode(vc.as_str().to_owned()).await }),
+                    .map(|vc| async { decoder.decode(vc.as_str().to_owned()).await.map_err(|e| e.into()) }),
             )
             .await
             .into_iter()

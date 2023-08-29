@@ -14,6 +14,7 @@ serde.workspace = true
 serde_json.workspace = true
 serde_with.workspace = true
 getset.workspace = true
+thiserror.workspace = true
 anyhow = "1.0"
 async-trait = "0.1"
 chrono = "0.4"

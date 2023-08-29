@@ -1,3 +1,4 @@
+pub mod error;
 pub mod managers;
 pub mod methods;
 pub mod servers;

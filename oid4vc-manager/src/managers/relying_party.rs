@@ -28,7 +28,7 @@ impl RelyingPartyManager {
     }
 
     pub fn current_subject_syntax_type(&self) -> Result<SubjectSyntaxType> {
-        self.relying_party.subject.type_()
+        self.relying_party.subject.type_().map_err(|e| e.into())
     }
 
     pub fn set_subject_syntax_type(&mut self, subject_syntax_type: SubjectSyntaxType) -> Result<()> {

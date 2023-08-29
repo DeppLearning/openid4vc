@@ -41,7 +41,7 @@ impl ProviderManager {
     }
 
     pub fn current_subject_syntax_type(&self) -> Result<SubjectSyntaxType> {
-        self.provider.subject.type_()
+        self.provider.subject.type_().map_err(|e| e.into())
     }
 
     pub fn set_subject_syntax_type(&mut self, subject_syntax_type: SubjectSyntaxType) -> Result<()> {

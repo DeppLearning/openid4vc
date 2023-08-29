@@ -1,4 +1,4 @@
-use anyhow::{anyhow, Result};
+// use anyhow::{anyhow, Result};
 use async_trait::async_trait;
 use futures::executor::block_on;
 use identity_iota::{
@@ -20,11 +20,11 @@ where
 }
 
 impl Sign for IotaSubject {
-    fn sign(&self, message: &str) -> Result<Vec<u8>> {
+    fn sign(&self, message: &str) -> Result<Vec<u8>, oid4vc_core::error::Error> {
         // Get the verification method for authentication from the DID document.
         let method = self
             .authentication_method()
-            .ok_or_else(|| anyhow!("No authentication method found."))?;
+            .ok_or_else(|| oid4vc_core::error::Error::InvalidDidMethodError("TEMP".to_owned()))?;
 
         let key_location = KeyLocation::from_verification_method(method)?;
 
@@ -32,7 +32,8 @@ impl Sign for IotaSubject {
             self.account.did(),
             &key_location,
             message.as_bytes().to_vec(),
-        ))?;
+        ))
+        .map_err(|e| oid4vc_core::error::Error::from(e))?;
 
         Ok(proof_value.as_bytes().to_vec())
     }
@@ -49,7 +50,7 @@ impl Sign for IotaSubject {
 
 /// `Subject` trait implementation for the IOTA method.
 impl Subject for IotaSubject {
-    fn identifier(&self) -> Result<String> {
+    fn identifier(&self) -> Result<String, oid4vc_core::error::Error> {
         Ok(self.account.did().to_string())
     }
 }
@@ -133,8 +134,10 @@ impl IotaSubject {
 /// `Verify` trait implementation for the IOTA method.
 #[async_trait]
 impl Verify for IotaSubject {
-    async fn public_key(&self, kid: &str) -> Result<Vec<u8>> {
-        resolve_public_key(kid).await
+    async fn public_key(&self, kid: &str) -> Result<Vec<u8>, oid4vc_core::error::Error> {
+        resolve_public_key(kid)
+            .await
+            .map_err(|e| oid4vc_core::error::Error::from(e))
     }
 }
 
@@ -151,8 +154,10 @@ impl IotaValidator {
 
 #[async_trait]
 impl Verify for IotaValidator {
-    async fn public_key(&self, kid: &str) -> Result<Vec<u8>> {
-        resolve_public_key(kid).await
+    async fn public_key(&self, kid: &str) -> Result<Vec<u8>, oid4vc_core::error::Error> {
+        resolve_public_key(kid)
+            .await
+            .map_err(|e| oid4vc_core::error::Error::from(e))
     }
 }
 

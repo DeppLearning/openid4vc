@@ -1,11 +1,10 @@
-use std::sync::Arc;
-
 use crate::{authentication::sign::ExternalSign, Sign, Subject, Verify};
 use async_trait::async_trait;
 use derivative::{self, Derivative};
 use ed25519_dalek::{Keypair, Signature, Signer};
 use lazy_static::lazy_static;
 use rand::rngs::OsRng;
+use std::sync::Arc;
 
 // Keypair for mocking purposes.
 lazy_static! {
@@ -21,7 +20,7 @@ pub struct TestSubject {
 }
 
 impl TestSubject {
-    pub fn new(did: String, key_id: String) -> Result<Self, crate::error::Error> {
+    pub fn new(did: String, key_id: String) -> anyhow::Result<Self> {
         Ok(TestSubject {
             did: identity_did::DIDUrl::parse(did)?,
             key_id,

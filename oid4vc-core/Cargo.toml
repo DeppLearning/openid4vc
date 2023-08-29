@@ -17,8 +17,9 @@ is_empty = "0.2.0"
 rand = "0.7"
 
 [dev-dependencies]
+tokio.workspace = true
 identity_did = { version = "=0.7.0-alpha.7" }
 ed25519-dalek = "1.0.1"
 lazy_static = "1.4.0"
 derivative = "2.2.0"
-tokio.workspace = true
+anyhow = "1.0"

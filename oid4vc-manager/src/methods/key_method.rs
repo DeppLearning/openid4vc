@@ -50,7 +50,7 @@ impl Sign for KeySubject {
             .and_then(|authentication_methods| authentication_methods.get(0).cloned())
     }
 
-    fn sign(&self, message: &str) -> Result<Vec<u8>> {
+    fn sign(&self, message: &str) -> Result<Vec<u8>, oid4vc_core::error::Error> {
         match self.external_signer() {
             Some(external_signer) => external_signer.sign(message),
             None => Ok(self.keypair.sign(message.as_bytes())),
@@ -64,13 +64,15 @@ impl Sign for KeySubject {
 
 #[async_trait]
 impl Verify for KeySubject {
-    async fn public_key(&self, kid: &str) -> Result<Vec<u8>> {
-        Ok(resolve_public_key(kid).await?)
+    async fn public_key(&self, kid: &str) -> Result<Vec<u8>, oid4vc_core::error::Error> {
+        resolve_public_key(kid)
+            .await
+            .map_err(|e| oid4vc_core::error::Error::InvalidDidMethodError(e.to_string()))
     }
 }
 
 impl Subject for KeySubject {
-    fn identifier(&self) -> Result<String> {
+    fn identifier(&self) -> Result<String, oid4vc_core::error::Error> {
         Ok(self.document.id.clone())
     }
 }
@@ -88,8 +90,10 @@ impl KeyValidator {
 
 #[async_trait]
 impl Verify for KeyValidator {
-    async fn public_key(&self, kid: &str) -> Result<Vec<u8>> {
-        Ok(resolve_public_key(kid).await?)
+    async fn public_key(&self, kid: &str) -> Result<Vec<u8>, oid4vc_core::error::Error> {
+        resolve_public_key(kid)
+            .await
+            .map_err(|e| oid4vc_core::error::Error::InvalidDidMethodError(e.to_string()))
     }
 }
 

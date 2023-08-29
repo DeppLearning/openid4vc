@@ -12,4 +12,6 @@ pub enum Error {
     MissingKeyIdentifierError(String),
     #[error("Invalid DID URL: {0}")]
     MissingValidatorError(String),
+    #[error("Invalid DID URL: {0}")]
+    AccountStorageError(#[from] identity_iota::account_storage::Error),
 }
