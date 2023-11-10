@@ -29,7 +29,7 @@ impl<S: Storage<CFC>, CFC: CredentialFormatCollection> CredentialIssuerManager<S
     ) -> Result<Self> {
         // `TcpListener::bind("127.0.0.1:0")` will bind to a random port.
         let listener = listener.unwrap_or_else(|| TcpListener::bind("127.0.0.1:0").unwrap());
-        let issuer_url: Url = format!("http://{:?}", issuer_url).parse()?;
+        let issuer_url: Url = issuer_url.parse()?;
         Ok(Self {
             credential_issuer: CredentialIssuer {
                 subject: subjects
